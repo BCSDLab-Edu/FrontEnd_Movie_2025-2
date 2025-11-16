@@ -4,8 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>front-movie-2025-2</title>
+    <link rel="stylesheet" href="./src/styles/style.css">
   </head>
   <body>
-    기본 html 작성
+    <header>
+      <img id="homeLogo" src="./src/assets/logo.png" alt="logo">
+      <form id="searchUI">
+        <input id="searchInput" type="text" placeholder="검색" autocomplete="off" required>
+        <button id="searchBtn" type="submit">
+          <img id="searchIcon" src="./src/assets/search_button.png" alt="searchIcon">
+        </button>
+      </form>
+    </header>
+    <main>
+      <section class="list">
+        <h1 id="listInfo">지금 인기있는 영화</h1>
+        <div id="listArea"></div>
+        <button id="moreBtn">더보기</button>
+      </section>
+    </main>
   </body>
+  <script src="./src/index.js"></script>
 </html>
