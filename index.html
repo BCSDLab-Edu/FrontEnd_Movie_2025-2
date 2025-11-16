@@ -1,11 +1,262 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>front-movie-2025-2</title>
-  </head>
-  <body>
-    기본 html 작성
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movielist</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&family=Roboto:ital,wdth,wght@0,75..100,100..900;1,75..100,100..900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #000;
+        }
+
+        header {
+            padding: 20px 32px;
+            border-bottom: 1px solid #FFFFFF80;
+            box-shadow: 0px 4px 8px 0px #FFFFFF33;
+
+            display: flex;
+            justify-content: space-between;
+        }
+
+        header > #search {
+            background-color: #fff;
+            padding: 10px 14px;
+            border-radius: 8px;
+
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        header > #search > input {
+            width: 260px;
+            font-family: "Roboto";
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 24px;
+            letter-spacing: 0%;
+        }
+        
+        header > #search > #btnSearch > img {
+            width: 24px;
+            height: 24px;
+        }
+
+        main {
+            padding: 75px 180px;
+        }
+        
+        main > h4 {
+            font-family: "Roboto";
+            font-weight: 600;
+            font-style: SemiBold;
+            font-size: 34px;
+            line-height: 36px;
+            color: #FFFFFFDE;
+
+            margin-bottom: 48px;;
+        }
+
+        main > #movies {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 64px;
+            margin-bottom: 64px;
+        }
+
+        main > #movies > .movie > img {
+            margin-bottom: 19px;
+            border-radius: 15px;
+        }
+
+        main > #movies > .movie > p {
+            font-family: "Roboto";
+            font-weight: 600;
+            font-size: 18px;
+            line-height: 100%;
+            letter-spacing: 0%;
+            vertical-align: middle;
+            color: #FFFFFF;
+
+            margin-bottom: 13px;
+        }
+
+        main > #movies > .movie > div {
+            display: flex;
+            gap: 7px;
+
+            font-family: "Roboto";
+            font-weight: 500;
+            font-size: 18px;
+            line-height: 100%;
+            letter-spacing: 0%;
+            vertical-align: middle;
+            color: #FFFFFF;
+        }
+
+        #btnMore {
+            border-radius: 8px;
+            background-color: #F33F3F;
+            color: #fff;
+            width: 100%;
+            height: 60px;
+
+            font-family: "Roboto";
+            font-weight: 600;
+            font-size: 18px;
+            line-height: 28px;
+            letter-spacing: 0%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="./"><img src="/src/assets/logo.png" alt="Movielist"></a>
+        <form id="search">
+            <input type="text" name="query" id="searchQuery" placeholder="검색">
+            <button id="btnSearch" role="submit"><img src="/src/assets/search_button.png" alt="검색"></button>
+        </form>
+    </header>
+    <main>
+        <h4>지금 인기있는 영화</h4>
+        <div id="movies"></div>
+        <button id="btnMore">더보기</button>
+    </main>
+
+    <script>
+        var lastFetch;
+        var lastSearchQuery = "";
+        var lastPage = 1;
+
+        async function getPopular() {
+            document.querySelector("main > h4").textContent = `지금 인기있는 영화`;
+
+            try {
+                const res = await fetch(
+                    `https://api.themoviedb.org/3/movie/popular?language=ko-KR&region=KOR&page=${lastPage++}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            accept: 'application/json',
+                            Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5YzdjYTliNTI3OTY1MTRmMmMyMDZmYzI4YWM4NDAwMyIsIm5iZiI6MTc2Mjc2OTQ5NS4zNDMwMDAyLCJzdWIiOiI2OTExYmE1NzEyY2E0NzZkNWFkZDIwODQiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.xvB91CX2isVAHYtF2YjSGRQuawN1o4JQoZyFX48RFq4'
+                        }
+                    }
+                );
+                const data = await res.json();
+                
+                for(let i = 0; i<data.results.length; i++) {
+                    const item = data.results[i];
+
+                    const div = document.createElement("div");
+                    div.classList.add("movie");
+
+                    const img = document.createElement("img");
+                    img.src = "https://image.tmdb.org/t/p/w500"+item["poster_path"];
+                    img.alt = "Poster";
+
+                    const p = document.createElement("p");
+                    p.textContent = item["original_title"];
+
+                    const divStar = document.createElement("div");
+                    divStar.textContent = item["vote_average"];
+
+                    const imgStar = document.createElement("img");
+                    imgStar.src = "/src/assets/star.svg";
+
+                    divStar.append(imgStar);
+                    div.append(img);
+                    div.append(p);
+                    div.append(divStar);
+                    document.getElementById("movies").append(div);
+                }
+
+                lastFetch = getPopular;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        
+        async function searchMovie(query) {
+            if(document.getElementById("movies").lastChild) {
+                query = lastSearchQuery;
+            }
+
+            document.querySelector("main > h4").textContent = `"${query}" 검색결과`;
+
+            try {
+                const res = await fetch(
+                    `https://api.themoviedb.org/3/search/movie?include_adult=false&language=ko-KR&page=${lastPage++}&region=KOR&query=${encodeURIComponent(query)}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            accept: 'application/json',
+                            Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5YzdjYTliNTI3OTY1MTRmMmMyMDZmYzI4YWM4NDAwMyIsIm5iZiI6MTc2Mjc2OTQ5NS4zNDMwMDAyLCJzdWIiOiI2OTExYmE1NzEyY2E0NzZkNWFkZDIwODQiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.xvB91CX2isVAHYtF2YjSGRQuawN1o4JQoZyFX48RFq4'
+                        }
+                    }
+                );
+                const data = await res.json();
+                
+                for(let i = 0; i<data.results.length; i++) {
+                    const item = data.results[i];
+
+                    const div = document.createElement("div");
+                    div.classList.add("movie");
+
+                    const img = document.createElement("img");
+                    img.src = "https://image.tmdb.org/t/p/w500"+item["poster_path"];
+                    img.alt = "Poster";
+
+                    const p = document.createElement("p");
+                    p.textContent = item["original_title"];
+
+                    const divStar = document.createElement("div");
+                    divStar.textContent = item["vote_average"];
+
+                    const imgStar = document.createElement("img");
+                    imgStar.src = "/src/assets/star.svg";
+
+                    divStar.append(imgStar);
+                    div.append(img);
+                    div.append(p);
+                    div.append(divStar);
+                    document.getElementById("movies").append(div);
+                }
+
+                lastFetch = searchMovie;
+                lastSearchQuery = query;
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        window.addEventListener("load", () => {
+            while(document.getElementById("movies").lastChild) {
+                document.getElementById("movies").lastChild.remove();
+            }
+            lastPage = 1;
+            getPopular();
+        });
+
+        document.getElementById("btnMore").addEventListener("click", () => {
+            lastFetch();
+        });
+
+        document.getElementById("search").addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            while(document.getElementById("movies").lastChild) {
+                document.getElementById("movies").lastChild.remove();
+            }
+            lastPage = 1;
+            searchMovie(document.getElementById("searchQuery").value);
+        });
+    </script>
+</body>
 </html>
